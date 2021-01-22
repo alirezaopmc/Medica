@@ -2,59 +2,37 @@ import random
 
 
 class UUID:
-    def __init__(self, salt_path, length):
+    """
+    All processes related to uuid are handled by an instance of
+    this class.
+    """
+    def __init__(self, salt_path: str, length: int):
         """
-        :param salt_path: str
-        :param length: int
-        :return: None
+        :param salt_path: the file containing the salt
+        :param length: the resulting uuid length
         """
         self.salt = open(salt_path, 'r').read()
         self.length = length
-        self.uuids = set()
 
-    def generate(self) -> str:
+    def generate(self, uuids: list) -> str:
         """
+        :param uuids: the list containing all uuids
         :return: a random non-repetitive uuid
         :rtype: str
         """
-        result = []
+        chars = []
         for i in range(self.length):
-            result.append(random.choice(self.salt))
-        return self.generate() if result in self.uuids else ''.join(result)
+            chars.append(random.choice(self.salt))
+        result = ''.join(chars)
+        return self.generate() if result in uuids else result
 
-    def new(self) -> str:
+    def new(self, uuids: list) -> str:
         """
+        :param uuids: the list containing all uuids
         :return: generates a new uuid
+        :rtype: str
         """
-        result = self.generate()
-        self.uuids.add(result)
+        result = self.generate(uuids)
+        uuids.add(result)
         return result
-
-
-def generate(salt, length):
-    """
-    generate a random
-    :param length: int
-    :param salt: str
-    :return: str
-    """
-    result = []
-    for i in range(length):
-        result.append(random.choice(salt))
-    return ''.join(result)
-
-
-def get(uuids: set, length, satlPath) -> str:
-    """
-    :param satlPath: str
-    :param uuids: set
-    :param length: int
-    :return:
-    """
-    salt = open(satlPath, 'r').read()
-    result = generate(salt, length)
-    while result in uuids:
-        result = generate(salt, length)
-    uuids.add(result)
-    return result
 
